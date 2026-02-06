@@ -1,7 +1,13 @@
-// app/page.tsx
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RootPage() {
-  // server-side redirect to /login
-  redirect("/login");
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/login");
+  }, [router]);
+
+  return null;
 }

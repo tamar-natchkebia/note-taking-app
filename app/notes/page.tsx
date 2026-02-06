@@ -11,7 +11,7 @@ interface Note {
   user_id: string
   category: string
   created_at: string
-  file_url?: string 
+  file_url: string | null // Changed from ? to allow null for the build to pass
 }
 
 const CATEGORIES = [
@@ -32,7 +32,6 @@ export default function NotesPage() {
   const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({})
   const [fileUrl, setFileUrl] = useState<string | null>(null) 
   
-  // Custom Alert State
   const [alert, setAlert] = useState<{show: boolean, title: string, message: string, onConfirm: () => void} | null>(null)
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -174,7 +173,7 @@ export default function NotesPage() {
     if (editingId) {
       const { error } = await supabase.from('notes').update({ content: newNote, category: selectedCat, file_url: fileUrl }).eq('id', editingId)
       if (!error) {
-        setNotes(prev => prev.map(n => n.id === editingId ? { ...n, content: newNote, category: selectedCat, file_url: fileUrl } : n))
+        setNotes(prev => prev.map(n => n.id === editingId ? ({ ...n, content: newNote, category: selectedCat, file_url: fileUrl } as Note) : n))
         setEditingId(null); setNewNote(''); setFileUrl(null)
       }
     } else {
@@ -185,7 +184,7 @@ export default function NotesPage() {
   }
 
   const editNote = (note: Note) => {
-    setEditingId(note.id); setNewNote(note.content); setSelectedCat(note.category); setFileUrl(note.file_url || null)
+    setEditingId(note.id); setNewNote(note.content); setSelectedCat(note.category); setFileUrl(note.file_url)
     window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(() => textareaRef.current?.focus(), 100)
   }
 
@@ -208,7 +207,6 @@ export default function NotesPage() {
   return (
     <div className="min-h-screen bg-[#FFCC33] p-4 md:p-10 font-sans selection:bg-[#78350F] selection:text-white relative overflow-x-hidden text-[#78350F]">
       
-      {/* Honey Aesthetic Custom Alert */}
       {alert && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#451A03]/60 backdrop-blur-sm transition-all">
           <div className="bg-white w-full max-w-sm rounded-[32px] border-4 border-[#78350F] shadow-[12px_12px_0px_0px_rgba(69,26,3,0.3)] overflow-hidden animate-in zoom-in duration-200">
@@ -233,7 +231,6 @@ export default function NotesPage() {
         </div>
       )}
 
-      {/* --- BACKGROUND PATTERN --- */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -243,8 +240,6 @@ export default function NotesPage() {
           </defs>
           <rect width="100%" height="100%" fill="url(#dotPattern)" />
         </svg>
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-br from-yellow-200 to-transparent opacity-40 blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-yellow-400 to-transparent opacity-30 blur-3xl"></div>
       </div>
 
       <div className="max-w-5xl mx-auto relative z-10">
