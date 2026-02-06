@@ -2,11 +2,15 @@
   "name": "cozy-bear-notes",
   "version": "0.1.0",
   "private": true,
+"engines": {
+  "node": "18.x"
+},
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "npm rebuild lightningcss || true"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
